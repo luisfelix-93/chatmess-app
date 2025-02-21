@@ -16,7 +16,7 @@ export default function Join() {
     return (
         <div className='join-container'>
             <header><FontAwesomeIcon icon={faSmile}/>
-            <h1>Chatmess</h1>
+            <h1 className='join-header'>Chatmess</h1>
             </header>
             <main className='join-main'>
                 <form onSubmit={handleSubmit}>
