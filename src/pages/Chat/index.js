@@ -5,10 +5,12 @@ import { faSmile, faComments, faUsers, faPaperPlane } from '@fortawesome/free-so
 import Message from "../../components/Message";
 import UserList from "../../components/UsersList";
 import './Chat.module.css';
+import { io } from "socket.io-client";
 
 export default function Chat() {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
+    const [socket, setSocket] = useState(null);
     const [users, setUsers] = useState([]);
     const { state } = useLocation();
     const navigate = useNavigate();
@@ -18,12 +20,43 @@ export default function Chat() {
             navigate('/');
         }
         // implementar conexão com socket
+        const newSocket = io('http://localhost:3001');
+        setSocket(newSocket);
+        // Entrar na sala
+
+        newSocket.emit('joinRoom', { username: state.username, room: state.room });
+
+        // Receber mensagens do servidor
+        newSocket.on('message', (message) => {
+            setMessages((prev) => [...prev, message]);
+        });
+
+        // Receber usuários da sala
+        newSocket.on('roomUsers', ({ users }) => {
+            setUsers(users);
+        });
+
+        // Lidar com error
+        newSocket.on('error', (error) => {
+            console.error(error);
+        });
+
+        // Desconectar do socket
+        return () => {
+            newSocket.disconnect();
+        };
+        
     }, [state, navigate]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (message.trim()) {
             // enviar mensagem para o servidor
+            socket.emit('chatMessage', {
+                username: state.username,
+                room: state.room,
+                text: message
+            });
             setMessage('');
         }
     };
@@ -49,11 +82,11 @@ export default function Chat() {
             <div className="chat-form-container">
                 <form onSubmit={handleSubmit}>
                     <input
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Enter Message"
-                    required
+                        type="text"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="Enter Message"
+                        required
                     />
                     <button className="btn"><FontAwesomeIcon icon={faPaperPlane} /></button>
                 </form>
