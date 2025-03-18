@@ -39,7 +39,7 @@ const Chat: React.FC = () => {
         // Inicia a conexão com o socket
         socket = io(ENDPOINT);
 
-        socket.emit('joinRoom', {username, room});
+        socket.emit('joinRoom', username, room);
 
         // Desconecta o socket ao desmontar o component
         return () => {
@@ -71,7 +71,14 @@ const Chat: React.FC = () => {
     const sendMessage = (e: React.FormEvent) => {
         e.preventDefault();
         if (message.trim()) {
-            socket.emit('chatMessage', message);
+            // Envie o objeto completo de mensagem
+            socket.emit('chatMessage', {
+                username: username,
+                room: room,
+                text: message
+            });
+            // Limpe o campo de mensagem
+            setMessage('');
         }
     };
 
