@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 
 const Join: React.FC = () => {
     const [username, setUsername] = useState('');
-    const [room, setRoom] = useState('');
+    const [room, setRoom] = useState('Javascript');
     const navigate = useNavigate();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         //redireciona para a pagina de chat com os parâmetros na query string
-        navigate(`/chat?username=${username}&room=${room}`);
+        navigate(`/chat?username=${encodeURIComponent(username)}&room=${encodeURIComponent(room)}`);
     };
 
     return (
