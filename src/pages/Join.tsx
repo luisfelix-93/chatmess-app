@@ -1,11 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Join: React.FC = () => {
     const [username, setUsername] = useState('');
-    const [room, setRoom] = useState('Javascript');
+    const [room, setRoom] = useState('')
+    const [rooms, setRooms] = useState<string[]>([]);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const fetchRooms = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/Room');
+                const data = await response.json();
+
+                if (data.success) {
+                    const roomNames = data.resultObject.map((roomObj: {room: string}) => roomObj.room);
+                    setRooms(roomNames);
+                } else {
+                    console.error("Erro na resposta da API:", data.message);
+                }
+            } catch (error) {
+                console.error("Erro ao buscar salas:", error);
+            }
+        };
+
+        fetchRooms();
+    }, []);
+    
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         //redireciona para a pagina de chat com os parâmetros na query string
@@ -35,17 +56,11 @@ const Join: React.FC = () => {
                     </div>
                     <div className="form-control">
                         <label htmlFor="room">Room</label>
-                        <select 
-                            name="room" 
-                            id="room"
-                            onChange={(e) => setRoom(e.target.value)}
-                        >
-                            <option value="JavaScript">JavaScript</option>
-                            <option value="Python">Python</option>
-                            <option value="PHP">PHP</option>
-                            <option value="C#">C#</option>
-                            <option value="Ruby">Ruby</option>
-                            <option value="Java">Java</option>
+                        <select name="room" id="room" value={room} onChange={(e) => setRoom(e.target.value)}>
+                            <option value="" disabled>Selecione uma sala</option>
+                                {rooms.map((roomName) => (
+                                <option key={roomName} value={roomName}>{roomName}</option>
+                            ))}
                         </select>
                     </div>
                     <button type="submit" className="btn">
