@@ -13,7 +13,7 @@ interface User {
     username: string;
 }
 
-const ENDPOINT = "http://localhost:3000"
+const ENDPOINT = "http://localhost:3001"
 
 let socket: Socket;
 
