@@ -1,11 +1,14 @@
 import QueryString from "qs";
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import './styles.css'
 import { io, Socket } from "socket.io-client";
+import ChatSideBar from "../../components/ChatSideBar";
+import ChatMessage from "../../components/ChatMessage";
 
 interface Message {
     username: string;
-    room: string;
+    room?: string;
     text: string;
 }
 
@@ -15,7 +18,6 @@ interface User {
 
 const ENDPOINT = "http://localhost:3001"
 
-let socket: Socket;
 
 const Chat: React.FC = () => {
     const location = useLocation();
@@ -27,6 +29,8 @@ const Chat: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
     const chatMessagesRef = useRef<HTMLDivElement>(null);
 
+    const socketRef = useRef<Socket | null>(null);
+
     useEffect(() => {
         //Recupera os parâmetros da URL
         const { username, room } = QueryString.parse(location.search, {
@@ -37,19 +41,19 @@ const Chat: React.FC = () => {
         setRoom(room);
 
         // Inicia a conexão com o socket
-        socket = io(ENDPOINT);
+        socketRef.current = io(ENDPOINT);
 
-        socket.emit('joinRoom', username, room);
+        socketRef.current.emit('joinRoom', username, room);
 
         // Desconecta o socket ao desmontar o component
         return () => {
-            socket.disconnect();
+            socketRef.current?.disconnect();
         };
     }, [location.search]);
 
     useEffect(() => {
         // Recebe as mensagens do servidor
-        socket.on('message', (message: Message) => {
+        socketRef.current?.on('message', (message: Message) => {
             setMessages((prevMessages) => [...prevMessages, message])
             if (chatMessagesRef.current) {
                 chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
@@ -57,14 +61,14 @@ const Chat: React.FC = () => {
         });
 
         // Atualiza a sala e os usuáarios
-        socket.on('roomUsers', ({ room, users }: { room: string; users: User[] }) => {
+        socketRef.current?.on('roomUsers', ({ room, users }: { room: string; users: User[] }) => {
             setRoom(room);
             setUsers(users);
         });
 
         return () => {
-            socket.off('message');
-            socket.off('roomUsers');
+            socketRef.current?.off('message');
+            socketRef.current?.off('roomUsers');
         }
     }, [])
 
@@ -72,7 +76,7 @@ const Chat: React.FC = () => {
         e.preventDefault();
         if (message.trim()) {
             // Envie o objeto completo de mensagem
-            socket.emit('chatMessage', {
+            socketRef.current?.emit('chatMessage', {
                 username: username,
                 room: room,
                 text: message
@@ -86,6 +90,8 @@ const Chat: React.FC = () => {
         if (window.confirm('Tem certeza que quer deixar a sala de chat')) {
             navigate('/');
         }
+        socketRef.current?.emit('onDisconnect', username, room);
+        socketRef.current?.disconnect();
     };
     return (
         <div className="chat-container">
@@ -98,25 +104,11 @@ const Chat: React.FC = () => {
                 </button>
             </header>
             <main className="chat-main">
-                <div className="chat-sidebar">
-                    <h3>
-                        <i className="fas fa-comments"></i> Sala:
-                    </h3>
-                    <ul id="users">
-                        {users.map((user, index) => (
-                            <li key={index}>{user.username}</li>
-                        ))}
-                    </ul>
-                </div>
-                <div className="chat-message" ref={chatMessagesRef}>
-                {messages.map((msg, index) => (
-                    <div key={index} className="message">
-                        <p className="meta">
-                            {msg.username}
-                        </p>
-                        <p className="text">{msg.text}</p>
-                    </div>
-                ))}
+                <ChatSideBar room={room} users={users} />
+                <div className="chat-messages" ref={chatMessagesRef}>
+                    {messages.map((message, index) => (
+                        <ChatMessage key={index} message={message} />
+                    ))}
                 </div>
             </main>
             <div className="chat-form-container">

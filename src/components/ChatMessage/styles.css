@@ -1,0 +1,51 @@
+/* Container geral para cada mensagem */
+.message {
+    margin-bottom: 15px;
+}
+  
+  /* Balão de mensagem */
+.balloon {
+    background-color: var(--light-color);
+    border-radius: 15px;
+    padding: 10px 15px;
+    max-width: 70%;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+  
+  /* Estilo para o nome do usuário */
+.balloon .meta {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: var(--dark-color-b);
+}
+  
+  /* Estilo para o texto da mensagem */
+.balloon .text {
+    font-size: 16px;
+    line-height: 1.4;
+}
+  
+  /* "Seta" do balão */
+.balloon::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+    border-top-color: var(--light-color);
+    border-bottom: 0;
+    margin-left: -10px;
+    margin-bottom: -10px;
+}
+  
+  /* Responsividade: ajuste da largura do balão em telas menores */
+@media (max-width: 700px) {
+    .balloon {
+      max-width: 90%;
+    }
+}
+  

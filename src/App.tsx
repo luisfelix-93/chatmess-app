@@ -1,8 +1,8 @@
 // src/App.tsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Join from './pages/Join';
-import Chat from './pages/Chat';
+import Join from './pages/Join/index';
+import Chat from './pages/Chat/index';
 
 const App: React.FC = () => {
   return (

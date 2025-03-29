@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import './styles.css';
 
 const Join: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -10,7 +11,7 @@ const Join: React.FC = () => {
     useEffect(() => {
         const fetchRooms = async () => {
             try {
-                const response = await fetch('http://localhost:8080/Room');
+                const response = await fetch('http://localhost:50/Room');
                 const data = await response.json();
 
                 if (data.success) {
