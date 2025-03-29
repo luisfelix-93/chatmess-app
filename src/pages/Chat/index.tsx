@@ -3,10 +3,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import './styles.css'
 import { io, Socket } from "socket.io-client";
+import ChatSideBar from "../../components/ChatSideBar";
+import ChatMessage from "../../components/ChatMessage";
 
 interface Message {
     username: string;
-    room: string;
+    room?: string;
     text: string;
 }
 
@@ -102,25 +104,11 @@ const Chat: React.FC = () => {
                 </button>
             </header>
             <main className="chat-main">
-                <div className="chat-sidebar">
-                    <h3>
-                        <i className="fas fa-comments"></i> Sala:
-                    </h3>
-                    <ul id="users">
-                        {users.map((user, index) => (
-                            <li key={index}>{user.username}</li>
-                        ))}
-                    </ul>
-                </div>
-                <div className="chat-message" ref={chatMessagesRef}>
-                {messages.map((msg, index) => (
-                    <div key={index} className="message">
-                        <p className="meta">
-                            {msg.username}
-                        </p>
-                        <p className="text">{msg.text}</p>
-                    </div>
-                ))}
+                <ChatSideBar room={room} users={users} />
+                <div className="chat-messages" ref={chatMessagesRef}>
+                    {messages.map((message, index) => (
+                        <ChatMessage key={index} message={message} />
+                    ))}
                 </div>
             </main>
             <div className="chat-form-container">
