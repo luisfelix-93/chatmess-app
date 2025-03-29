@@ -18,7 +18,6 @@ interface User {
 
 const ENDPOINT = "http://localhost:3001"
 
-let socket: Socket;
 
 const Chat: React.FC = () => {
     const location = useLocation();
@@ -30,6 +29,8 @@ const Chat: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
     const chatMessagesRef = useRef<HTMLDivElement>(null);
 
+    const socketRef = useRef<Socket | null>(null);
+
     useEffect(() => {
         //Recupera os parâmetros da URL
         const { username, room } = QueryString.parse(location.search, {
@@ -40,19 +41,19 @@ const Chat: React.FC = () => {
         setRoom(room);
 
         // Inicia a conexão com o socket
-        socket = io(ENDPOINT);
+        socketRef.current = io(ENDPOINT);
 
-        socket.emit('joinRoom', username, room);
+        socketRef.current.emit('joinRoom', username, room);
 
         // Desconecta o socket ao desmontar o component
         return () => {
-            socket.disconnect();
+            socketRef.current?.disconnect();
         };
     }, [location.search]);
 
     useEffect(() => {
         // Recebe as mensagens do servidor
-        socket.on('message', (message: Message) => {
+        socketRef.current?.on('message', (message: Message) => {
             setMessages((prevMessages) => [...prevMessages, message])
             if (chatMessagesRef.current) {
                 chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
@@ -60,14 +61,14 @@ const Chat: React.FC = () => {
         });
 
         // Atualiza a sala e os usuáarios
-        socket.on('roomUsers', ({ room, users }: { room: string; users: User[] }) => {
+        socketRef.current?.on('roomUsers', ({ room, users }: { room: string; users: User[] }) => {
             setRoom(room);
             setUsers(users);
         });
 
         return () => {
-            socket.off('message');
-            socket.off('roomUsers');
+            socketRef.current?.off('message');
+            socketRef.current?.off('roomUsers');
         }
     }, [])
 
@@ -75,7 +76,7 @@ const Chat: React.FC = () => {
         e.preventDefault();
         if (message.trim()) {
             // Envie o objeto completo de mensagem
-            socket.emit('chatMessage', {
+            socketRef.current?.emit('chatMessage', {
                 username: username,
                 room: room,
                 text: message
@@ -86,12 +87,11 @@ const Chat: React.FC = () => {
     };
 
     const handleLeave = () => {
-        socket = io(ENDPOINT);
         if (window.confirm('Tem certeza que quer deixar a sala de chat')) {
             navigate('/');
         }
-        socket.emit('onDisconnect', username, room);
-        socket.disconnect();
+        socketRef.current?.emit('onDisconnect', username, room);
+        socketRef.current?.disconnect();
     };
     return (
         <div className="chat-container">

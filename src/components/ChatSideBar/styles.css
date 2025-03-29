@@ -6,24 +6,24 @@
     height: 100%;
 }
   
-  .chat-sidebar h3 {
+.chat-sidebar h3 {
     font-size: 18px;
     margin-bottom: 15px;
     display: flex;
     align-items: center;
 }
   
-  .chat-sidebar h3 i {
+.chat-sidebar h3 i {
     margin-right: 8px;
 }
   
-  .chat-sidebar ul {
+.chat-sidebar ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
   
-  .chat-sidebar ul li {
+.chat-sidebar ul li {
     padding: 10px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
