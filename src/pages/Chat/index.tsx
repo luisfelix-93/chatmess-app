@@ -1,6 +1,7 @@
 import QueryString from "qs";
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import './styles.css'
 import { io, Socket } from "socket.io-client";
 
 interface Message {
@@ -83,9 +84,12 @@ const Chat: React.FC = () => {
     };
 
     const handleLeave = () => {
+        socket = io(ENDPOINT);
         if (window.confirm('Tem certeza que quer deixar a sala de chat')) {
             navigate('/');
         }
+        socket.emit('onDisconnect', username, room);
+        socket.disconnect();
     };
     return (
         <div className="chat-container">
