@@ -16,7 +16,7 @@ interface User {
     username: string;
 }
 
-const ENDPOINT = "http://localhost:3001"
+const ENDPOINT = process.env.URL_WEB_SOCKET || "http://localhost:3001"
 
 
 const Chat: React.FC = () => {
@@ -39,6 +39,9 @@ const Chat: React.FC = () => {
 
         setUsername(username);
         setRoom(room);
+
+        // Recupera ou gera um UUID único para o usuário
+
 
         // Inicia a conexão com o socket
         socketRef.current = io(ENDPOINT);
@@ -85,6 +88,8 @@ const Chat: React.FC = () => {
             setMessage('');
         }
     };
+
+    console.log('Chat', room, JSON.stringify(users));
 
     const handleLeave = () => {
         if (window.confirm('Tem certeza que quer deixar a sala de chat')) {

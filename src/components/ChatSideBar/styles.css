@@ -27,4 +27,27 @@
     padding: 10px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
-  
+
+.user-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-size: 16px;
+    padding: 5px 0;
+}
+
+.status-icon {
+    width: 10px;
+    height: 10px;
+    border-radius: 50px;
+    display: inline-block;
+}
+
+.online {
+    background-color: var(--success-color);
+}
+
+.offline {
+    background-color: var(--error-color);
+}

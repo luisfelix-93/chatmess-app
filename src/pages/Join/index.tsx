@@ -7,11 +7,13 @@ const Join: React.FC = () => {
     const [room, setRoom] = useState('')
     const [rooms, setRooms] = useState<string[]>([]);
     const navigate = useNavigate();
+   
 
     useEffect(() => {
         const fetchRooms = async () => {
             try {
-                const response = await fetch('http://localhost:50/Room');
+                const API_URL = process.env.URL_API_CHATMESS
+                const response = await fetch(API_URL || 'http://localhost:50/Room');
                 const data = await response.json();
 
                 if (data.success) {
