@@ -12,6 +12,7 @@ interface ChatSidebarProps {
 }
 
 const ChatSideBar: React.FC<ChatSidebarProps> = ({ room, users }) => {
+  console.log("ChatSideBar", room, JSON.stringify(users));
   return (
     <div className="chat-sidebar">
       <h3>
@@ -19,7 +20,10 @@ const ChatSideBar: React.FC<ChatSidebarProps> = ({ room, users }) => {
       </h3>
       <ul>
         {users.map((user, index) => (
-          <li key={index}>{user.username}</li>
+          <li key={index} className="user-item">
+            <span className="status-icon online"></span>
+          {user.username}
+          </li>
         ))}
       </ul>
     </div>

@@ -32,7 +32,6 @@ const Join: React.FC = () => {
         //redireciona para a pagina de chat com os parâmetros na query string
         navigate(`/chat?username=${encodeURIComponent(username)}&room=${encodeURIComponent(room)}`);
     };
-
     return (
         <div className="join-container">
             <header className="join-header">
